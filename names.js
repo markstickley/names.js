@@ -19,7 +19,8 @@ define(function() {
 
     /**
         Takes a function and returns an array containing the names of the function's
-          arguments in the correct order
+          arguments in the correct order. Inspired by and adapted from AngularJS'
+          dependency injection (http://angularjs.org/)
         @param {function} func The function
         @returns {array} The names of the function's arguments
     */
