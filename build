@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# Build names.js -> names.min.js
+# Assuming r.js is installed globally
+r.js -o name=names out=names.min.js baseUrl=.
