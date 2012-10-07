@@ -1,4 +1,13 @@
-define(['names'], function(name) {
+// If there is no support for AMD or requirejs, add a run-once function to load
+//   the module.
+if(typeof define === 'undefined') {
+    define = function(deps, callback) {
+        callback();
+        define = undefined;
+    };
+}
+
+define(['names'], function() {
 
     describe("names.js", function() {
 

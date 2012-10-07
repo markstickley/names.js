@@ -1,0 +1,50 @@
+<html>
+    <head>
+        <title>names.js test suite (no requirejs)</title>
+
+        <link rel="stylesheet" type="text/css" href="../lib/jasmine/lib/jasmine-core/jasmine.css">
+        <script type="text/javascript" src="../lib/jasmine/lib/jasmine-core/jasmine.js"></script>
+        <script type="text/javascript" src="../lib/jasmine/lib/jasmine-core/jasmine-html.js"></script>
+
+        <script type="text/javascript" src="../names.js"></script>
+
+        <script type="text/javascript" src="names.js"></script>
+
+        <script type="text/javascript">
+            (function() {
+                var alreadyRun = false,
+                    jasmineEnv = jasmine.getEnv();
+
+                jasmineEnv.updateInterval = 250;
+
+                var htmlReporter = new jasmine.HtmlReporter();
+                jasmineEnv.addReporter(htmlReporter);
+
+                jasmineEnv.specFilter = function(spec) {
+                    return htmlReporter.specFilter(spec);
+                };
+
+                function onReadyStateChange() {
+                    if(document.readyState !== "loading" && !alreadyRun) {
+                        alreadyRun = true;
+                        jasmineEnv.execute();
+                    }
+                };
+
+                if(document.readyState === "loading"){
+                    document.addEventListener ?
+                    document.addEventListener("readystatechange", onReadyStateChange, false) :
+                    document.attachEvent && document.attachEvent("readystatechange", onReadyStateChange);
+                }
+                else{
+                    onReadyStateChange();
+                }
+            })();
+        </script>
+    </head>
+    <body>
+        <h1>names.js test suite (no requirejs)</h1>
+
+        <div id="HTMLReporter" class="jasmine_reporter"></div>
+    </body>
+</html>
