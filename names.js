@@ -1,5 +1,5 @@
 /**
-    @module name.js
+    @module names.js
 */
 define(function() {
 
@@ -20,9 +20,9 @@ define(function() {
 
         if (typeof func === 'function') {
 
-            func.__nameArgs = func.__nameArgs || {};
+            func.__namesArgs = func.__namesArgs || {};
 
-            if(!func.__nameArgs.args) {
+            if(!func.__namesArgs.args) {
 
                 functionText = func.toString().replace(STRIP_COMMENTS, '');
                 argDeclaration = functionText.match(FN_ARGS)[1];
@@ -38,11 +38,11 @@ define(function() {
 
                 }
 
-                func.__nameArgs.args = args;
+                func.__namesArgs.args = args;
 
             }
 
-            return func.__nameArgs.args;
+            return func.__namesArgs.args;
 
         }
         else {
@@ -69,9 +69,9 @@ define(function() {
             if(namedArgs.hasOwnProperty(functionArgs[i])) {
                 appliedArgs.push(namedArgs[functionArgs[i]]);
             }
-            else if(this.__nameArgs && this.__nameArgs.defaults &&
-              this.__nameArgs.defaults.hasOwnProperty(functionArgs[i])) {
-                appliedArgs.push(this.__nameArgs.defaults[functionArgs[i]]);
+            else if(this.__namesArgs && this.__namesArgs.defaults &&
+              this.__namesArgs.defaults.hasOwnProperty(functionArgs[i])) {
+                appliedArgs.push(this.__namesArgs.defaults[functionArgs[i]]);
             }
             else {
                 appliedArgs.push(null);

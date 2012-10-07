@@ -1,6 +1,6 @@
-define(['name'], function(name) {
+define(['names'], function(name) {
 
-    describe("Name.js", function() {
+    describe("names.js", function() {
 
         it("adds 'applyNamed' to Function's prototype", function() {
             var test = function() {};
@@ -30,7 +30,7 @@ define(['name'], function(name) {
                 baz: baz
             };
         }
-        testNameArgsArgs.__nameArgs = {
+        testNameArgsArgs.__namesArgs = {
             args: ['bar', 'foo', 'baz']
         };
 
@@ -42,7 +42,7 @@ define(['name'], function(name) {
                 bat: bat
             };
         }
-        testNameArgsDefaults.__nameArgs = {
+        testNameArgsDefaults.__namesArgs = {
             defaults: {
                 foo: 'ooze',
                 baz: 'banjo'
@@ -112,7 +112,7 @@ define(['name'], function(name) {
 
         });
 
-        it("uses static property '__nameArgs.args' to define argument order and " +
+        it("uses static property '__namesArgs.args' to define argument order and " +
               "override automatic detection", function() {
 
             var returnedArgs = testNameArgsArgs.applyNamed(null, {
@@ -120,13 +120,13 @@ define(['name'], function(name) {
                 bar: 'test2',
                 baz: 'test3'
             });
-            expect(returnedArgs.foo).toBe('test2'); // because it's switched in __nameArgs.args
+            expect(returnedArgs.foo).toBe('test2'); // because it's switched in __namesArgs.args
             expect(returnedArgs.bar).toBe('test1');
             expect(returnedArgs.baz).toBe('test3');
 
         });
 
-        it("uses static property '__nameArgs.defaults' to provide default values " +
+        it("uses static property '__namesArgs.defaults' to provide default values " +
               " to missing arguments", function() {
 
             var returnedArgs = testNameArgsDefaults.applyNamed(null, {
@@ -140,9 +140,9 @@ define(['name'], function(name) {
 
         });
 
-        xit("uses static property '__nameArgs.type' to type-check arguments", function() { });
+        xit("uses static property '__namesArgs.type' to type-check arguments", function() { });
 
-        xit("uses static property '__nameArgs.validate' to validate arguments", function() { });
+        xit("uses static property '__namesArgs.validate' to validate arguments", function() { });
 
     });
 

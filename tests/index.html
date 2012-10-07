@@ -1,6 +1,6 @@
 <html>
 <head>
-    <title>Name.js test suite</title>
+    <title>names.js test suite</title>
 
     <link rel="stylesheet" type="text/css" href="../lib/jasmine/lib/jasmine-core/jasmine.css">
 
@@ -8,13 +8,13 @@
         var require = {
             paths: {
                 jasmine: "../lib/jasmine/lib/jasmine-core",
-                nameTests: 'name',
-                name: '../name'
+                namesTests: 'names',
+                names: '../names'
             },
             shim: {
                 'jasmine/jasmine-html': ['jasmine/jasmine']
             },
-            deps: ['nameTests', 'jasmine/jasmine', 'jasmine/jasmine-html'],
+            deps: ['namesTests', 'jasmine/jasmine', 'jasmine/jasmine-html'],
             callback: function() {
                 var jasmineEnv = jasmine.getEnv();
                 jasmineEnv.updateInterval = 250;
@@ -46,7 +46,7 @@
     <script type="text/javascript" src="../lib/require/require.js"></script>
 </head>
 <body>
-    <h1>Name.js test suite</h1>
+    <h1>names.js test suite</h1>
 
     <div id="HTMLReporter" class="jasmine_reporter"></div>
 </body>
