@@ -19,6 +19,19 @@ Usage
 For full documentation, please see the [documentation pages](http://markstickley.github.com/name.js).
 
 
+Building
+--------
+
+You can minify the project into `names.min.js` by taking the following steps:
+
+* Ensure `build` is executable. If it's not, run `chmod u+x build` on the command line
+* Build with the command `./build`
+
+The build script assumes that requirejs and node.js are installed globally.
+
+To install node.js, visit the [node.js download page](http://nodejs.org/). To install requirejs globally, first install node.js, then run `npm install -g requirejs`.
+
+
 Tests
 -----
 
