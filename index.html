@@ -31,14 +31,33 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h2>What is it?</h2>
+        <p><a href="#Usage">Skip to examples</a></p>
+
+<h2>What is it?</h2>
 
 <p><code>names.js</code> augments the function prototype. Features include:</p>
 
 <ul>
 <li>Named, unordered arguments</li>
 <li>Default argument values</li>
-</ul><p><a href="#Usage">Skip to examples</a></p>
+</ul><h2>What problems does it solve?</h2>
+
+<p>When you call a function, you provide a list of arguments whose purpose is opaque without going to the function definition and reading the argument names. Going with the adage that code is read far more frequently than it is written, it makes sense that it should be clear what role arguments to a function have without having to jump to the function itself. <code>names.js</code> solves that problem.</p>
+
+<p>Which is clearer to read?</p>
+
+<pre><code>var orders = getOrders(16, true);
+</code></pre>
+
+<p>or</p>
+
+<pre><code>var orders = getOrders.applyNamed(this, {
+    user: 16,
+    includeCompletedOrders: true
+});
+</code></pre>
+
+<p>In addition to this, <code>names.js</code> supports default values for arguments, so you don't have to specify them each time for the common usage.</p>
 
 <h2>Installation</h2>
 
