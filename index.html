@@ -127,7 +127,9 @@ anyOldFunction.applyNamed(scope, {
 
 <h3>Specifying the argument order</h3>
 
-<p><code>names.js</code> calculates this for you as follows:</p>
+<p><strong>IMPORTANT</strong>: If your code is minified, you MUST specify the arguments because the argument names will change during minification.</p>
+
+<p>If you are not minifying your code, <code>names.js</code> can calculate this for you as follows:</p>
 
 <pre><code>function anyOldFunction(arg1, arg2, arg3) {
     ...
@@ -139,23 +141,21 @@ anyOldFunction.applyNamed(scope, {});
 anyOldFunction.__namesArgs.args; // ['arg1', 'arg2', 'arg3']
 </code></pre>
 
-<p>However, if you want to change the order or save on cycles by specifying the arguments you can as follows:</p>
+<p>If you are minifying your code, want to change the order, change the argument names or save on cycles by specifying the arguments you can do so as follows:</p>
 
 <pre><code>function anyOldFunction(arg1, arg2, arg3) {
     return [arg1, arg2, arg3];
 }
 anyOldFunction.__namesArgs = {
-    args: ['arg2', 'arg1', 'arg3']
+    args: ['bish', 'bash', 'bosh']
 };
 
 anyOldFunction.applyNamed(scope, {
-    arg1: 'foo',
-    arg2: 'bar',
-    arg3: 'baz'
+    bash: 'foo',
+    bish: 'bar',
+    bosh: 'baz'
 }); // ['bar', 'foo', 'baz']
 </code></pre>
-
-<p><strong>IMPORTANT</strong>: If your code is minified, you MUST specify the arguments because the argument names will change during minification.</p>
       </section>
     </div>
 
