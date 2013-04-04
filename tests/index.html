@@ -8,7 +8,7 @@
             var require = {
                 paths: {
                     jasmine: "../lib/jasmine/lib/jasmine-core",
-                    namesTests: 'names',
+                    namesTests: 'namesTests',
                     names: '../names'
                 },
                 shim: {
@@ -18,7 +18,7 @@
                 callback: function() {
                     var alreadyRun = false,
                         jasmineEnv = jasmine.getEnv();
-                        
+
                     jasmineEnv.updateInterval = 250;
 
                     var htmlReporter = new jasmine.HtmlReporter();
