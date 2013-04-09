@@ -65,7 +65,8 @@ define(function() {
     /**
         Determines whether an argument is of the correct type
         @param {object} args An object of arguments
-        @param
+        @param {object} types An object containing the types of the args
+        @param {string} name The argument name to check
     */
     function passesTypeCheck(args, types, name) {
         if(!name) {
@@ -83,8 +84,7 @@ define(function() {
         if(!types || !types[name]) {
             return true;
         }
-
-        if(args && args[name] && types && types[name]) {
+        else if(args && args[name]) {
             if(typeof types[name] === 'string' &&
               typeof args[name] === types[name]) {
                 return true;
@@ -95,6 +95,46 @@ define(function() {
                 return true;
             }
 
+        }
+
+        return false;
+    }
+
+
+    /**
+        Determines whether an argument passes its validation
+        @param {object} args An object of arguments
+        @param {object} validation An object containing validation for the args
+        @param {string} name The argument name to check
+    */
+    function passesValidation(args, validation, name) {
+        if(!name) {
+            throw new Error('passesValidation: name is required');
+        }
+
+        if(!args || args[name] === undefined) {
+            if(validation && validation[name] && validation[name].required) {
+                throw new Error('passesValidation: argument "'+name+'" is required');
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            if(!validation || !validation[name] || !validation[name].test) {
+                return true;
+            }
+            else {
+                if(typeof validation[name].test === 'function') {
+                    return validation[name].test(args[name]);
+                }
+
+                if(typeof validation[name].test === 'object' &&
+                  !!validation[name].test.test) {
+                    return validation[name].test.test(args[name]);
+                }
+
+            }
         }
 
         return false;
@@ -148,7 +188,12 @@ define(function() {
             argument = args[name];
 
             if(passesTypeCheck(args, this.__namesArgs.types, name)) {
-                argsToApply.push(argument || null);
+                if(passesValidation(args, this.__namesArgs.validation, name)) {
+                    argsToApply.push(argument || null);
+                }
+                else {
+                    throw new Error('applyNamed: '+args[name]+' is not valid');
+                }
             }
             else {
                 throw new Error('applyNamed: '+args[name]+

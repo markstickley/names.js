@@ -75,6 +75,37 @@ define(['names'], function() {
             }
         };
 
+        function testNameArgsValidation(foo, bar, baz, bat) {
+            return {
+                foo: foo,
+                bar: bar,
+                baz: baz,
+                bat: bat
+            };
+        }
+        testNameArgsValidation.__namesArgs = {
+            validation: {
+                foo: {
+                    test: function(arg) {
+                        return (arg < 50);
+                    }
+                },
+                bar: {
+                    test: /^[a-z]+$/
+                },
+                baz: {
+                    test: function(arg) {
+                        return !arg;
+                    },
+                    required: true
+                },
+                bat: {
+                    test: /^.*burg$/,
+                    required: false
+                }
+            }
+        };
+
         it("uses the first argument as the scope if it is an object",
           function() {
 
@@ -215,7 +246,7 @@ define(['names'], function() {
 
         });
 
-        describe('uses function #checkType which', function() {
+        describe('uses function "passesTypeCheck" and', function() {
 
             function TestObject(){}
 
@@ -317,7 +348,61 @@ define(['names'], function() {
         });
 
 
-        xit("uses static property '__namesArgs.validate' to validate arguments", function() { });
+        it("uses static property '__namesArgs.validate' to validate arguments", function() {
+            expect(function() {
+                testNameArgsValidation.applyNamed(null, {
+                    foo: 49,
+                    bar: 'hello',
+                    baz: 0
+                });
+            }).not.toThrow();
+        });
+
+        describe('uses function "passesValidation" and', function() {
+
+            it("should not throw when all arguments are valid", function() {
+                expect(function() {
+                    testNameArgsValidation.applyNamed(null, {
+                        foo: 49,
+                        bar: 'hello',
+                        baz: 0,
+                        bat: 'battenburg'
+                    });
+                }).not.toThrow();
+            });
+
+            it("should throw if one or more tests fail", function() {
+                expect(function() {
+                    testNameArgsValidation.applyNamed(null, {
+                        foo: 51,
+                        bar: 'hello',
+                        baz: 0,
+                        bat: 'duckburg'
+                    });
+                }).toThrow();
+            });
+
+            it("should not throw if an argument is undefined, even if the test fails", function() {
+                expect(function() {
+                    testNameArgsValidation.applyNamed(null, {
+                        bar: 'hello',
+                        baz: 0,
+                        bat: 'hamburg'
+                    });
+                }).not.toThrow();
+            });
+
+            it("should throw if an argument is undefined, the test fails and the test is marked as required", function() {
+                expect(function() {
+                    testNameArgsValidation.applyNamed(null, {
+                        foo: 49,
+                        bar: 'hello',
+                        bat: 'iceburg'
+                    });
+                }).toThrow();
+            });
+
+        });
 
     });
 
