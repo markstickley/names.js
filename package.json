@@ -1,0 +1,26 @@
+{
+    "name": "names.js",
+    "preferGlobal": "false",
+    "version": "0.1.0",
+    "author": "Mark Stickley <markstickley@theyakshack.co.uk>",
+    "description": "A clearer way to supply arguments to functions",
+    "contributors": [
+        {
+            "name": "Mark Stickley",
+            "email": "marks@blinkbox.com"
+        }
+    ],
+    "scripts": {
+    },
+    "keywords": [
+        "javascript",
+        "arguments", "args"
+        "named",
+        "type", "check","checking",
+        "validation"
+    ],
+    "dependencies" : {
+        "/lib/require": "2.0.2",
+        "/lib/jasmine": "1.2.0"
+    }
+}
