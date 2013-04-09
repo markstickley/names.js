@@ -43,3 +43,13 @@ Dependencies
 
 * names.js can be used with [requirejs](http://www.requirejs.org) but does NOT depend on it.
 * Tests depend on [Jasmine](http://pivotal.github.com/jasmine/)
+
+
+Changelog
+---------
+
+### 0.1.0
+
+* Added changelog
+* Added package.json
+* Added Type checking and validation for arguments
