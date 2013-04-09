@@ -40,6 +40,8 @@
 <ul>
 <li>Named, unordered arguments</li>
 <li>Default argument values</li>
+<li>Argument type checking</li>
+<li>Argument validation</li>
 </ul><h2>What problems does it solve?</h2>
 
 <p>When you call a function, you provide a list of arguments whose purpose is opaque without going to the function definition and reading the argument names. Going with the adage that code is read far more frequently than it is written, it makes sense that it should be clear what role arguments to a function have without having to jump to the function itself. <code>names.js</code> solves that problem.</p>
@@ -59,9 +61,13 @@
 <pre><code>swfobject.embedSWF("myContent.swf", "myContent", "300", "120", "9.0.0","expressInstall.swf", { foo: 'bar' }, { hello: 'world' }, { wmode: 'transparent' });
 </code></pre>
 
-<p>In addition to this, <code>names.js</code> supports <em>default values</em> for arguments, so you don't have to specify them each time for the common usage.</p>
+<p>In addition to this, <code>names.js</code> supports:</p>
 
-<h2>Installation</h2>
+<ul>
+<li>
+<em>default values</em> for arguments, so you don't have to specify them each time for the common usage.</li>
+<li>Argument type checking and simple validation so your functions can focus purely on their task and not worry about incorrect arguments.</li>
+</ul><h2>Installation</h2>
 
 <p>You only need <code>names.js</code> (or the minified version, <code>names.min.js</code>) so you can do one of the following:</p>
 
@@ -110,6 +116,8 @@ anyOldFunction.applyNamed(scope, {
 
 <h3>Adding default values to arguments</h3>
 
+<p>Default values are used when no value is supplied for an argument. They also apply when type checking or validating.</p>
+
 <pre><code>function anyOldFunction(arg1, arg2, arg3) {
     return [arg1, arg2, arg3];
 }
@@ -123,6 +131,85 @@ anyOldFunction.applyNamed(scope, {
     arg3: 'baz',
     arg2: 'foo'
 }); // ['default value', 'foo', 'baz']
+</code></pre>
+
+<h3>Adding argument type checking</h3>
+
+<p>You can check the type of an argument either against its <code>typeof</code> value or against the function which the object inherits its prototype from:</p>
+
+<pre><code>function MyClass(){};
+
+function anyOldFunction(arg1, arg2, arg3) {
+    return [arg1, arg2, arg3];
+}
+anyOldFunction.__namesArgs = {
+    types: {
+        arg1: 'string',
+        arg2: MyClass,
+        arg3: 'number'
+    }
+};
+
+anyOldFunction.applyNamed(scope, {
+    arg1: 'foo',
+    arg2: new MyClass(),
+    arg3: 42
+}); // ['foo', Object, 42]
+
+anyOldFunction.applyNamed(scope, {
+    arg1: false,
+    arg2: new MyClass(),
+    arg3: 42
+}); // throws Error because arg1 is not a string
+</code></pre>
+
+<h3>Adding argument validation</h3>
+
+<p>A validation takes the form of an object with a <code>test</code> property which takes the form of a function or a regular expression. The validation object also has an options <code>required</code> property (boolean):</p>
+
+<pre><code>{
+    test: /[a-zA-Z0-9]+/,
+    required: true // this is optional
+}
+</code></pre>
+
+<p>If required is not set to <code>true</code>, the validation is only run if a value is supplied for the argument.</p>
+
+<pre><code>function anyOldFunction(arg1, arg2, arg3) {
+    return [arg1, arg2, arg3];
+}
+anyOldFunction.__namesArgs = {
+    validation: {
+        arg1: {
+            test: /[a-z]+/
+        },
+        arg2: {
+            test: function(arg) { return arg=='bar'; },
+            required: true
+        },
+        arg3: {
+            test: /.*/,
+            required: false
+        }
+    }
+};
+
+anyOldFunction.applyNamed(scope, {
+    arg1: 'foo',
+    arg2: 'bar',
+    arg3: 'baz'
+}); // ['foo', 'bar', 'baz']
+
+anyOldFunction.applyNamed(scope, {
+    arg1: '42',
+    arg2: 'bar',
+    arg3: 'baz'
+}); // throws Error because arg1 does not pass validation
+
+anyOldFunction.applyNamed(scope, {
+    arg1: 'foo',
+    arg3: 'baz'
+}); // throws Error because arg2 was required
 </code></pre>
 
 <h3>Specifying the argument order</h3>
