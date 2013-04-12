@@ -30,9 +30,9 @@ define(function() {
 
         if (typeof func === 'function') {
 
-            func.__namesArgs = func.__namesArgs || {};
+            func.__names = func.__names || {};
 
-            if(!func.__namesArgs.args) {
+            if(!func.__names.args) {
 
                 functionText = func.toString().replace(STRIP_COMMENTS, '');
                 argDeclaration = functionText.match(FN_ARGS)[1];
@@ -48,11 +48,11 @@ define(function() {
 
                 }
 
-                func.__namesArgs.args = args;
+                func.__names.args = args;
 
             }
 
-            return func.__namesArgs.args;
+            return func.__names.args;
 
         }
         else {
@@ -179,7 +179,7 @@ define(function() {
             argNames = getArgNamesFromFunction(this);
 
         args = combine(
-          (this.__namesArgs && this.__namesArgs.defaults)?this.__namesArgs.defaults:{},
+          (this.__names && this.__names.defaults)?this.__names.defaults:{},
           namedArgs
         );
 
@@ -187,8 +187,8 @@ define(function() {
             name = argNames[i];
             argument = args[name];
 
-            if(passesTypeCheck(args, this.__namesArgs.types, name)) {
-                if(passesValidation(args, this.__namesArgs.validation, name)) {
+            if(passesTypeCheck(args, this.__names.types, name)) {
+                if(passesValidation(args, this.__names.validation, name)) {
                     argsToApply.push(argument || null);
                 }
                 else {
@@ -197,7 +197,7 @@ define(function() {
             }
             else {
                 throw new Error('applyNamed: '+args[name]+
-                  ' is not of type '+this.__namesArgs.types[name]);
+                  ' is not of type '+this.__names.types[name]);
             }
         }
 

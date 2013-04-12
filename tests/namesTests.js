@@ -39,7 +39,7 @@ define(['names'], function() {
                 baz: baz
             };
         }
-        testNameArgsArgs.__namesArgs = {
+        testNameArgsArgs.__names = {
             args: ['bar', 'foo', 'baz']
         };
 
@@ -51,7 +51,7 @@ define(['names'], function() {
                 bat: bat
             };
         }
-        testNameArgsDefaults.__namesArgs = {
+        testNameArgsDefaults.__names = {
             defaults: {
                 foo: 'ooze',
                 baz: 'banjo'
@@ -66,7 +66,7 @@ define(['names'], function() {
                 bat: bat
             };
         }
-        testNameArgsTypes.__namesArgs = {
+        testNameArgsTypes.__names = {
             types: {
                 foo: 'function',
                 bar: 'string',
@@ -83,7 +83,7 @@ define(['names'], function() {
                 bat: bat
             };
         }
-        testNameArgsValidation.__namesArgs = {
+        testNameArgsValidation.__names = {
             validation: {
                 foo: {
                     test: function(arg) {
@@ -170,7 +170,7 @@ define(['names'], function() {
 
         });
 
-        it("uses static property '__namesArgs.args' to define argument order and " +
+        it("uses static property '__names.args' to define argument order and " +
               "override automatic detection", function() {
 
             var returnedArgs = testNameArgsArgs.applyNamed(null, {
@@ -178,13 +178,13 @@ define(['names'], function() {
                 bar: 'test2',
                 baz: 'test3'
             });
-            expect(returnedArgs.foo).toBe('test2'); // because it's switched in __namesArgs.args
+            expect(returnedArgs.foo).toBe('test2'); // because it's switched in __names.args
             expect(returnedArgs.bar).toBe('test1');
             expect(returnedArgs.baz).toBe('test3');
 
         });
 
-        it("uses static property '__namesArgs.defaults' to provide default values " +
+        it("uses static property '__names.defaults' to provide default values " +
               " to missing arguments", function() {
 
             var returnedArgs = testNameArgsDefaults.applyNamed(null, {
@@ -198,7 +198,7 @@ define(['names'], function() {
 
         });
 
-        it("type-checks arguments using static property '__namesArgs.types' and throws on type mismatches", function() {
+        it("type-checks arguments using static property '__names.types' and throws on type mismatches", function() {
             expect(function() {
                 testNameArgsTypes.applyNamed(null, {
                     foo: function() {},
@@ -259,13 +259,13 @@ define(['names'], function() {
             }
 
             beforeEach(function() {
-                testNameArgsType.__namesArgs = {};
+                testNameArgsType.__names = {};
             });
 
-            it("should throw when '__namesArgs.types' mentions a value that is not specified and there is no default", function() {
+            it("should throw when '__names.types' mentions a value that is not specified and there is no default", function() {
                 var testFunction;
 
-                testNameArgsType.__namesArgs.types = { foo: 'object', bar: TestObject, baz: 'number' };
+                testNameArgsType.__names.types = { foo: 'object', bar: TestObject, baz: 'number' };
                 testFunction = function() {
                     testNameArgsType.applyNamed(null, {
                         foo: {},
@@ -276,11 +276,11 @@ define(['names'], function() {
                 expect(testFunction).toThrow();
             });
 
-            it("should throw when '__namesArgs.types' mentions a value that is not specified and there is an invalid default", function() {
+            it("should throw when '__names.types' mentions a value that is not specified and there is an invalid default", function() {
                 var testFunction;
 
-                testNameArgsType.__namesArgs.types = { foo: 'object', bar: TestObject, baz: 'number' };
-                testNameArgsType.__namesArgs.defaults = { bar: 'flibble' };
+                testNameArgsType.__names.types = { foo: 'object', bar: TestObject, baz: 'number' };
+                testNameArgsType.__names.defaults = { bar: 'flibble' };
                 testFunction = function() {
                     testNameArgsType.applyNamed(null, {
                         foo: {},
@@ -291,11 +291,11 @@ define(['names'], function() {
                 expect(testFunction).toThrow();
             });
 
-            it("shouldn't throw when '__namesArgs.types' mentions a value that is not specified but there is a valid default", function() {
+            it("shouldn't throw when '__names.types' mentions a value that is not specified but there is a valid default", function() {
                 var testFunction;
 
-                testNameArgsType.__namesArgs.types = { foo: 'object', bar: TestObject, baz: 'number' };
-                testNameArgsType.__namesArgs.defaults = { bar: new TestObject() };
+                testNameArgsType.__names.types = { foo: 'object', bar: TestObject, baz: 'number' };
+                testNameArgsType.__names.defaults = { bar: new TestObject() };
                 testFunction = function() {
                     testNameArgsType.applyNamed(null, {
                         foo: {},
@@ -306,10 +306,10 @@ define(['names'], function() {
                 expect(testFunction).not.toThrow();
             });
 
-            it("can accept string values in '__namesArgs.types' for typeof comparisons, and function values for instanceof comparisons", function() {
+            it("can accept string values in '__names.types' for typeof comparisons, and function values for instanceof comparisons", function() {
                 var testFunction;
 
-                testNameArgsType.__namesArgs.types = { foo: 'object', bar: TestObject, baz: 'number' };
+                testNameArgsType.__names.types = { foo: 'object', bar: TestObject, baz: 'number' };
                 testFunction = function() {
                     testNameArgsType.applyNamed(null, {
                         foo: {},
@@ -348,7 +348,7 @@ define(['names'], function() {
         });
 
 
-        it("uses static property '__namesArgs.validate' to validate arguments", function() {
+        it("uses static property '__names.validate' to validate arguments", function() {
             expect(function() {
                 testNameArgsValidation.applyNamed(null, {
                     foo: 49,
