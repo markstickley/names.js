@@ -170,7 +170,7 @@ define(['names'], function() {
 
         });
 
-        it("uses static property '__names.args' to define argument order and " +
+        it("uses property '__names.args' to define argument order and " +
               "override automatic detection", function() {
 
             var returnedArgs = testNameArgsArgs.applyNamed(null, {
@@ -184,7 +184,7 @@ define(['names'], function() {
 
         });
 
-        it("uses static property '__names.defaults' to provide default values " +
+        it("uses property '__names.defaults' to provide default values " +
               " to missing arguments", function() {
 
             var returnedArgs = testNameArgsDefaults.applyNamed(null, {
@@ -198,7 +198,7 @@ define(['names'], function() {
 
         });
 
-        it("type-checks arguments using static property '__names.types' and throws on type mismatches", function() {
+        it("type-checks arguments using property '__names.types' and throws on type mismatches", function() {
             expect(function() {
                 testNameArgsTypes.applyNamed(null, {
                     foo: function() {},
@@ -348,7 +348,7 @@ define(['names'], function() {
         });
 
 
-        it("uses static property '__names.validate' to validate arguments", function() {
+        it("uses property '__names.validation' to validate arguments", function() {
             expect(function() {
                 testNameArgsValidation.applyNamed(null, {
                     foo: 49,
@@ -402,6 +402,166 @@ define(['names'], function() {
                 }).toThrow();
             });
 
+        });
+
+    });
+
+    describe('Function#addValidation', function() {
+
+        it('should add validation to the __names property of the function', function() {
+            var testFunction = function(arg1) {},
+                validation = function(){return true;};
+            testFunction.__names = {
+                args: ['arg1']
+            };
+
+            testFunction.addValidation({
+                arg1: {
+                    test: validation
+                }
+            });
+
+            expect(testFunction.__names.validation.arg1.test).toBe(validation);
+        });
+
+        it('should also work with applyNamed', function() {
+            var testFunction = function(arg1) {},
+                validation = function(){return true;};
+            testFunction.__names = {
+                args: ['arg1']
+            };
+
+            testFunction.addValidation.applyNamed(testFunction, {
+                validations: {
+                    arg1: {
+                        test: validation
+                    }
+                }
+            });
+
+            expect(testFunction.__names.validation.arg1.test).toBe(validation);
+        });
+
+        it('should throw back errors when using applyNamed and validations are incorrect', function() {
+            var testFunction = function(arg1) {},
+                validation = function(){return true;};
+            testFunction.__names = {
+                args: ['arg1']
+            };
+
+            expect(function() { testFunction.addValidation.applyNamed(null, {
+                validations: {
+                    arg1: {
+                        test: 42
+                    }
+                }
+            }); }).toThrow();
+
+            expect(function() { testFunction.addValidation.applyNamed(null, {
+                validations: {
+                    arg1: {
+                        test: validation,
+                        required: 42
+                    }
+                }
+            }); }).toThrow();
+
+        });
+
+        it('should, if validations already exist, not replace all of them but'+
+          ' only validations of the same name', function() {
+            var testFunction = function(arg1, arg2) {},
+                validation1 = function(){return true;},
+                validation2 = function(){return false;},
+                validation3 = function(){return 'whatever';};
+            testFunction.__names = {
+                args: ['arg1', 'arg2']
+            };
+
+            testFunction.addValidation({
+                arg1: {
+                    test: validation1
+                },
+                arg2: {
+                    test: validation2
+                }
+            });
+
+            expect(testFunction.__names.validation.arg1.test).toBe(validation1);
+            expect(testFunction.__names.validation.arg2.test).toBe(validation2);
+
+            testFunction.addValidation({
+                arg1: {
+                    test: validation3
+                }
+            });
+
+            expect(testFunction.__names.validation.arg1.test).toBe(validation3);
+            expect(testFunction.__names.validation.arg2.test).toBe(validation2);
+        });
+
+        it('should create a __names property on the function if it doesn\'t'+
+          ' already exist', function() {
+            var testFunction = function(arg1) {},
+                validation = function(){return true;};
+
+            expect(testFunction.__names).toBe(undefined);
+
+            testFunction.addValidation({
+                arg1: {
+                    test: validation
+                }
+            });
+
+            expect(testFunction.__names).not.toBe(undefined);
+        });
+
+    });
+
+    describe('Function.createNamed', function() {
+
+        it('should return a function', function() {
+            expect(typeof (Function.createNamed({
+                args: [['arg1']],
+                method: function(arg1) {}
+            }))).toBe('function');
+        });
+
+        it('should construct a suitable __names object on the function', function() {
+            var myFunc = Function.createNamed({
+                args: [['arg1', 'string', 'foobar']],
+                method: function(arg1) {}
+            });
+
+            expect(myFunc.__names).not.toBe(undefined);
+            expect(myFunc.__names.args[0]).toBe('arg1');
+            expect(myFunc.__names.types.arg1).toBe('string');
+            expect(myFunc.__names.defaults.arg1).toBe('foobar');
+        });
+
+        it('should throw if the args are incorrect', function() {
+            expect(function() { Function.createNamed({
+                args: [[42, 'string', 'foobar']], // not a string
+                method: function(arg1) {}
+            }); }).toThrow();
+
+            expect(function() { Function.createNamed({
+                args: [['arg1', 42, 'foobar']], // not a string or a function
+                method: function(arg1) {}
+            }); }).toThrow();
+
+            expect(function() { Function.createNamed({
+                args: [['arg1', 'string', 42]], // not matching the type 'string'
+                method: function(arg1) {}
+            }); }).toThrow();
+
+        });
+
+        it('should throw if the method is not a function', function() {
+            expect(function() { Function.createNamed({
+                args: [['arg1', 'string', 'foobar']],
+                method: 'I want to be a function, but I\'m just a string :('
+            }); }).toThrow();
         });
 
     });

@@ -56,7 +56,7 @@ define(function() {
 
         }
         else {
-            throw new Error('getArgNamesFromFunction: func must be a function');
+            throw new Error('names.js getArgNamesFromFunction: func must be a function');
         }
 
     }
@@ -70,7 +70,7 @@ define(function() {
     */
     function passesTypeCheck(args, types, name) {
         if(!name) {
-            throw new Error('passesTypeCheck: name is required');
+            throw new Error('names.js passesTypeCheck: name is required');
         }
 
         if(
@@ -78,7 +78,7 @@ define(function() {
           types &&
           types[name]
         ) {
-            throw new Error('passesTypeCheck: argument "'+name+'" is required');
+            throw new Error('names.js passesTypeCheck: argument "'+name+'" is required');
         }
 
         if(!types || !types[name]) {
@@ -109,12 +109,12 @@ define(function() {
     */
     function passesValidation(args, validation, name) {
         if(!name) {
-            throw new Error('passesValidation: name is required');
+            throw new Error('names.js passesValidation: name is required');
         }
 
         if(!args || args[name] === undefined) {
             if(validation && validation[name] && validation[name].required) {
-                throw new Error('passesValidation: argument "'+name+'" is required');
+                throw new Error('names.js passesValidation: argument "'+name+'" is required');
             }
             else {
                 return true;
@@ -165,6 +165,68 @@ define(function() {
 
 
     /**
+        Creates a new function and sets up __names based on the args
+        @param {array} args The args to the method, in order.
+          Each arg should take the format ['name', type, default]
+        @param {function} method The method
+        @returns {function} The new function
+    */
+    function create(args, method) {
+        var i, arg;
+
+        if(!(args instanceof Array)) {
+            throw new Error('names.js create: args must be an array');
+        }
+
+        method.__names = method.__names || {};
+        method.__names.args = method.__names.args || [];
+        method.__names.types = method.__names.types || {};
+        method.__names.defaults = method.__names.defaults || {};
+
+        for(i=0; i<args.length; i++) {
+            arg = args[i];
+
+            if(!(arg instanceof Array)) {
+                throw new Error('names.js create: all args\' values must be arrays');
+            }
+
+            if(typeof arg[0] !== 'string') {
+                throw new Error('names.js create: the first value in an arg must'+
+                  ' be a string');
+            }
+
+            method.__names.args[i] = arg[0];
+
+            // type
+            if(typeof arg[1] === 'string' || typeof arg[1] === 'function') {
+                method.__names.types[arg[0]] = arg[1];
+            }
+            else if(arg[1] !== undefined && arg[1] !== null) {
+                throw new Error('names.js create: the second value in an arg'+
+                  ' must be a string or a Class/function');
+            }
+
+            // default
+            if(arg[2] !== undefined && arg[2] !== null) {
+                if(arg[1] &&
+                  passesTypeCheck({test: arg[2]}, {test: arg[1]}, 'test')) {
+                    method.__names.defaults[arg[0]] = arg[2];
+                }
+                else {
+                    throw new Error('names.js create: the third value in an arg'+
+                      ' must match the type specified by the second value');
+                }
+            }
+        }
+
+        return method;
+    }
+    create.__names = {
+        args: ['args', 'method']
+    };
+
+
+    /**
         Works like function.apply except you apply an object and the items
           are indexed with the name of the arguments of the function to which
           they are applied.
@@ -192,11 +254,11 @@ define(function() {
                     argsToApply.push(argument || null);
                 }
                 else {
-                    throw new Error('applyNamed: '+args[name]+' is not valid');
+                    throw new Error('names.js applyNamed: '+args[name]+' is not valid');
                 }
             }
             else {
-                throw new Error('applyNamed: '+args[name]+
+                throw new Error('names.js applyNamed: '+args[name]+
                   ' is not of type '+this.__names.types[name]);
             }
         }
@@ -204,5 +266,64 @@ define(function() {
         return this.apply(scope, argsToApply);
 
     };
+
+
+    /**
+        Calls create with named args
+        @param {object} args Object with properties args (array) and
+          method (function)
+        @returns {function} The constructed function
+    */
+    Function.createNamed = function(args) {
+        return create.applyNamed(null, args);
+    };
+
+
+    /**
+        Adds argument validation to the function, which you can't do as part of createNamed
+        @param {object} validations Object in the form:
+          {
+            argName: {
+              test: function|regex
+              required: boolean (optional)
+            }
+          }
+    */
+    Function.prototype.addValidation = Function.createNamed({
+        args: [['validations','object']],
+        method: function(validations) {
+            var i, validation;
+
+            this.__names = this.__names || {};
+            this.__names.validation = this.__names.validation || {};
+
+            for(i in validations) {
+                validation = validations[i];
+                this.__names.validation[i] = validation;
+            }
+        }
+    });
+    Function.prototype.addValidation.addValidation({
+        validations: {
+            test: function(validations) {
+                var i, validation;
+                for(i in validations) {
+                    validation = validations[i];
+                    if(!validation.test ||
+                      (typeof validation.test !== 'function' &&
+                        !(typeof validation.test === 'object' && !!validation.test.test))) {
+                        return false;
+                    }
+                    if(validation.required !== undefined &&
+                      typeof validation !== 'boolean') {
+                        return false;
+                    }
+                }
+
+                return true;
+            },
+            required: true
+        }
+    });
 
 });
