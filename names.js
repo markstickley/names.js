@@ -8,7 +8,10 @@ if(typeof define === 'undefined') {
 }
 
 /**
-    @module names.js
+    While JSDoc notation is used for all the methods, I don't think JSDoc is
+    really designed for something like names.js.
+    There is fairly comprehensive documentation available at:
+        http://namesjs.markstickley.co.uk
 */
 define(function() {
 
