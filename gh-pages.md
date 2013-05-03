@@ -1,6 +1,6 @@
 [Quick start](#Quickstart)
 
-[Why?](#Why) [Get](#About) [Loading](#Loading)
+[Why?](#Why) | [Get](#About) | [Loading](#Loading)
 
 
 What is names.js? <a id="About"></a>
