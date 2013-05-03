@@ -31,9 +31,12 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <p><a href="#Usage">Skip to examples</a></p>
+        <p><a href="#Quickstart">Quick start</a></p>
 
-<h2>What is it?</h2>
+<p><a href="#Why">Why?</a> | <a href="#About">Get</a> | <a href="#Loading">Loading</a></p>
+
+<h2>What is names.js? <a></a>
+</h2>
 
 <p><code>names.js</code> augments the function prototype. Features include:</p>
 
@@ -42,7 +45,36 @@
 <li>Default argument values</li>
 <li>Argument type checking</li>
 <li>Argument validation</li>
-</ul><h2>What problems does it solve?</h2>
+</ul><h2>How to use names.js <a></a>
+</h2>
+
+<h3>Step 1: Declare</h3>
+
+<pre><code>var doSomething = Function.createNamed(
+    [
+        ['arg1', 'argumentType', 'defaultValue'],
+        ['arg2', 'string', 'defaultValue'], // Eg.
+        ['arg3', MyClass, someVar] // or this
+    ],
+    function(arg1, arg2, arg3) {
+        ...
+    }
+);
+</code></pre>
+
+<h3>Step 2: Call</h3>
+
+<pre><code>doSomething.applyNamed(null, {
+    arg1: 42,
+    arg2: 'something else',
+    arg3: aVariable
+});
+</code></pre>
+
+<p><a href="#Usage">A more detailed explanation</a></p>
+
+<h2>What problems does it solve? Why bother? <a></a>
+</h2>
 
 <p>When you call a function, you provide a list of arguments whose purpose is opaque without going to the function definition and reading the argument names. Going with the adage that code is read far more frequently than it is written, it makes sense that it should be clear what role arguments to a function have without having to jump to the function itself. <code>names.js</code> solves that problem.</p>
 
@@ -67,7 +99,8 @@
 <li>
 <em>default values</em> for arguments, so you don't have to specify them each time for the common usage.</li>
 <li>Argument type checking and simple validation so your functions can focus purely on their task and not worry about incorrect arguments.</li>
-</ul><h2>Installation</h2>
+</ul><h2>Installation <a></a>
+</h2>
 
 <p>You only need <code>names.js</code> (or the minified version, <code>names.min.js</code>) so you can do one of the following:</p>
 
@@ -79,169 +112,150 @@
 <ul>
 <li><p>Go to the <a href="https://github.com/markstickley/names.js">project page</a> and click on <code>names.js</code> or <code>names.min.js</code> and download to include anywhere in your project</p></li>
 <li><p>Or you could click one of the handy links at the top of the page to download the whole lot</p></li>
-</ul><h2>Loading</h2>
+</ul><h2>Loading <a></a>
+</h2>
 
 <p><code>names.js</code> can be loaded with <a href="http://www.requirejs.org">requirejs</a> but if you are not using that you can just include it in a script tag.</p>
 
 <h2>Usage <a></a>
 </h2>
 
-<p>Use <code>names.js</code> by calling <code>Function.prototype.applyNamed</code> on any function. It works just like <code>Function.prototype.apply</code> (<a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/apply">docs</a>) except you pass an object as the second value instead of an array. </p>
+<p>First set up a function by calling <code>Function.create</code>.</p>
 
-<h3>Basic usage</h3>
-
-<pre><code>function anyOldFunction(arg1, arg2, arg3) {
-    return [arg1, arg2, arg3];
+<pre><code>var myFunction = Function.create(
+    [           // The items in this array represent the args of the function
+                // They MUST be in the same order as they appear in the function
+        [
+            'arg_name', // This is how the first argument will be identified when calling applyNamed
+                        // It doesn't have to match the name used in the function but it makes sense to.
+            'type',     // This can either be the type returned by typeof, a class function.
+                        // If you don't want to type check this arg, just leave it out or set to null.
+            'default_value' // If provided, this default value will be used when the arg is not provided.
+        ],
+        ... // repeat the array above for all args
+    ],
+    function(arg_name, ...) {
+        ...
+    }
 }
-
-anyOldFunction.applyNamed(scope, {
-    arg2: 'foo',
-    arg1: 'bar',
-    arg3: 'baz'
-}); // ['bar', 'foo', 'baz']
+);
 </code></pre>
+
+<p>E.g.</p>
+
+<pre><code>var divide = Function.create(
+    [['dividend','number'],['divisor','number']],
+    function(dividend,divisor) {
+        return dividend/divisor;
+    }
+);
+</code></pre>
+
+<p>Optionally, you can add validation for any argument that needs it.</p>
+
+<pre><code>myFunction.addValidation({
+    arg_name: {
+        test: /.*/, // This can be a regex or a function returning true or false
+        required: true // If not set to true, if the arg is not provided it is not tested
+    },
+    ...
+});
+</code></pre>
+
+<p>E.g.</p>
+
+<pre><code>divide.addValidation({
+    dividend: {
+        required: true
+    },
+    divisor: {
+        test: function(arg) {
+            if(arg === 0) {
+                console.log('Cannot divide by 0');
+                return false;
+            }
+        },
+        required: true
+    }
+});
+</code></pre>
+
+<p>Once set up, use <code>Function.prototype.applyNamed</code> to call your function. It works just like <code>Function.prototype.apply</code> (<a href="https://developer.mozilla.org/en-US/docs/JavaScript/Reference/Global_Objects/Function/apply">docs</a>) except you pass an object as the second value instead of an array. </p>
+
+<p>E.g.</p>
+
+<pre><code>var quotient = divide.applyNamed(null, {
+    dividsor: 5,
+    dividend: 20
+});
+</code></pre>
+
+<h2>Further Usage Information <a></a>
+</h2>
 
 <h3>Omitting an argument sets it to <code>null</code>
 </h3>
 
-<pre><code>function anyOldFunction(arg1, arg2, arg3) {
-    return [arg1, arg2, arg3];
-}
-
-anyOldFunction.applyNamed(scope, {
-    arg3: 'baz',
-    arg2: 'foo'
-}); // [null, 'foo', 'baz']
-</code></pre>
-
-<h3>Adding default values to arguments</h3>
-
-<p>Default values are used when no value is supplied for an argument. They also apply when type checking or validating.</p>
-
-<pre><code>function anyOldFunction(arg1, arg2, arg3) {
-    return [arg1, arg2, arg3];
-}
-anyOldFunction.__namesArgs = {
-    defaults: {
-        arg1: 'default value'
+<pre><code>var anyOldFunction = Function.createNamed(
+    [['arg1'], ['arg2'], ['arg3']],
+    function(arg1, arg2, arg3) {
+        return [arg1, arg2, arg3];
     }
-};
+);
 
-anyOldFunction.applyNamed(scope, {
+anyOldFunction.applyNamed(null, {
     arg3: 'baz',
     arg2: 'foo'
-}); // ['default value', 'foo', 'baz']
+}); // returns [null, 'foo', 'baz']
 </code></pre>
 
-<h3>Adding argument type checking</h3>
+<h3>The __names property</h3>
 
-<p>You can check the type of an argument either against its <code>typeof</code> value or against the function which the object inherits its prototype from:</p>
+<p>Your function has a property <code>__names</code>. You shouldn't need to manually change this, but it's useful to know for debugging. Here is the structure:</p>
 
-<pre><code>function MyClass(){};
-
-function anyOldFunction(arg1, arg2, arg3) {
-    return [arg1, arg2, arg3];
-}
-anyOldFunction.__namesArgs = {
+<pre><code>myFunction.__names = {
+    args: {
+        ['arg1','arg2'] // The args in order
+    },
     types: {
         arg1: 'string',
-        arg2: MyClass,
-        arg3: 'number'
-    }
-};
-
-anyOldFunction.applyNamed(scope, {
-    arg1: 'foo',
-    arg2: new MyClass(),
-    arg3: 42
-}); // ['foo', Object, 42]
-
-anyOldFunction.applyNamed(scope, {
-    arg1: false,
-    arg2: new MyClass(),
-    arg3: 42
-}); // throws Error because arg1 is not a string
-</code></pre>
-
-<h3>Adding argument validation</h3>
-
-<p>A validation takes the form of an object with a <code>test</code> property which takes the form of a function or a regular expression. The validation object also has an options <code>required</code> property (boolean):</p>
-
-<pre><code>{
-    test: /[a-zA-Z0-9]+/,
-    required: true // this is optional
-}
-</code></pre>
-
-<p>If required is not set to <code>true</code>, the validation is only run if a value is supplied for the argument.</p>
-
-<pre><code>function anyOldFunction(arg1, arg2, arg3) {
-    return [arg1, arg2, arg3];
-}
-anyOldFunction.__namesArgs = {
+        arg2: Class
+    },
+    defaults: {
+        arg1: 'default value'
+        arg2: classInstance
+    },
     validation: {
         arg1: {
-            test: /[a-z]+/
-        },
-        arg2: {
-            test: function(arg) { return arg=='bar'; },
+            test: /.*/,
             required: true
         },
-        arg3: {
-            test: /.*/,
-            required: false
+        arg2: {
+            test: function() { return true; }
         }
     }
 };
-
-anyOldFunction.applyNamed(scope, {
-    arg1: 'foo',
-    arg2: 'bar',
-    arg3: 'baz'
-}); // ['foo', 'bar', 'baz']
-
-anyOldFunction.applyNamed(scope, {
-    arg1: '42',
-    arg2: 'bar',
-    arg3: 'baz'
-}); // throws Error because arg1 does not pass validation
-
-anyOldFunction.applyNamed(scope, {
-    arg1: 'foo',
-    arg3: 'baz'
-}); // throws Error because arg2 was required
 </code></pre>
 
-<h3>Specifying the argument order</h3>
+<h3>Quick usage</h3>
 
-<p><strong>IMPORTANT</strong>: If your code is minified, you MUST specify the arguments because the argument names will change during minification.</p>
+<p>You can use <code>applyNamed</code> with any function, not just those created with <code>createNamed</code>. <em>However</em>, it is only recommended for test or prototype situations as it will not work once the code is minified.</p>
 
-<p>If you are not minifying your code, <code>names.js</code> can calculate this for you as follows:</p>
+<pre><code>// This
+myFunc.applyNamed(null, {
+    arg1: 'something',
+    arg2: 'somethingElse'
+});
 
-<pre><code>function anyOldFunction(arg1, arg2, arg3) {
+// Works with this
+function myFunc(arg1, arg2) {
     ...
 }
-anyOldFunction.applyNamed(scope, {});
 
-// When running anyOldFunction.applyNamed for the first time it generates this:
-
-anyOldFunction.__namesArgs.args; // ['arg1', 'arg2', 'arg3']
-</code></pre>
-
-<p>If you are minifying your code, want to change the order, change the argument names or save on cycles by specifying the arguments you can do so as follows:</p>
-
-<pre><code>function anyOldFunction(arg1, arg2, arg3) {
-    return [arg1, arg2, arg3];
+// But not this (the same code minified)
+function a(b,c){
+    ...
 }
-anyOldFunction.__namesArgs = {
-    args: ['bish', 'bash', 'bosh']
-};
-
-anyOldFunction.applyNamed(scope, {
-    bash: 'foo',
-    bish: 'bar',
-    bosh: 'baz'
-}); // ['bar', 'foo', 'baz']
 </code></pre>
       </section>
     </div>
