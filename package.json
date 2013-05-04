@@ -1,13 +1,13 @@
 {
     "name": "names.js",
     "preferGlobal": "false",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "author": "Mark Stickley <markstickley@theyakshack.co.uk>",
     "description": "A clearer way to supply arguments to functions",
     "contributors": [
         {
             "name": "Mark Stickley",
-            "email": "marks@blinkbox.com"
+            "email": "markstickley@theyakshack.co.uk"
         }
     ],
     "scripts": {
