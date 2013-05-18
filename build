@@ -2,5 +2,9 @@
 
 # Build names.js -> names.min.js
 # Assuming r.js is installed globally
+
+echo "Building docs... "
+
 r.js -o name=names out=names.min.js baseUrl=.
 
+echo "done."

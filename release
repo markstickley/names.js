@@ -1,0 +1,145 @@
+#!/bin/bash
+die () {
+    echo >&2 "$@
+"
+    echo "Rolling back..."
+    git reset --hard $revision > /dev/null
+    echo "done."
+    exit 1
+}
+
+
+## Check for parameter input
+[ "$#" -eq 1 ] || die "
+  Usage:
+    build x.y.z
+
+  Where x.y.z is the new version number
+"
+
+## Check for uncommited changes
+if ! git diff-index --quiet HEAD -- ;then
+    echo "
+  You have uncommitted changes. Please sort that out and try again.
+"
+    exit 1
+fi
+
+
+## Check for untracked files
+if [ "$(git ls-files --other --exclude-standard)" != "" ];then
+    echo "
+  You have untracked files. Please sort that out and try again.
+"
+    exit 1
+fi
+
+
+## Check that we're on master branch
+branch=$(git branch | sed -n -e 's/^\* \(.*\)/\1/p')
+[ $branch == "master" ] || die "
+  Currently on branch $branch. Please switch to master to release.
+"
+
+
+## Store git revision number for rollback
+revision=$(git rev-parse HEAD)
+
+
+## Check the version number format
+echo $1 | grep -E -q '^[0-9]+\.[0-9]+\.[0-9]+$' || die "The version number must be in the format x.y.z
+"
+
+## Extract parts of new version number
+newBreaking=$(echo $1 | cut -d . -f 1)
+newFeature=$(echo $1 | cut -d . -f 2)
+newPatch=$(echo $1 | cut -d . -f 3)
+
+
+## Read package version
+oldVersion=$(cat package.json | grep -E '"version": "([0-9]+\.[0-9]+\.[0-9]+)"' | cut -d \" -f 4)
+
+
+## Extract parts of old version number
+oldBreaking=$(echo $oldVersion | cut -d . -f 1)
+oldFeature=$(echo $oldVersion | cut -d . -f 2)
+oldPatch=$(echo $oldVersion | cut -d . -f 3)
+
+
+## check that this version is greater
+if [ $newBreaking -gt $oldBreaking ];then
+    die "
+Cannot release breaking changes with this script. Please do it manually to make sure that is your intention.
+"
+fi
+
+greater=0
+
+if [[ $newBreaking -gt $oldBreaking ]];then
+    greater=1
+fi
+
+if [[ $newBreaking -eq $oldBreaking ]];then
+    if [[ $newFeature -gt $oldFeature ]] ||
+      [[ $newFeature -eq $oldFeature && $newPatch -gt $oldPatch ]];then
+        greater=1
+    fi
+fi
+
+if [ $greater -ne 1 ];then
+    die "
+  New version number ($1) must be greater than the old one ($oldVersion). Aborting.
+"
+fi
+
+
+## From here on there are changes made to files etc.
+## Update package version
+sed -i '' -e "s/\"version\": \"$oldVersion\"/\"version\": \"$1\"/g" package.json
+
+
+## Test
+echo 'Testing un-minified... '
+./test | grep -E -q 'FAILED' && die "Aborting due to un-minified version failing tests.
+"
+echo 'passed.'
+
+
+## Package with r.js
+echo 'Building minified version... '
+./build | grep -E -q 'done.' || die "Aborting due to unsuccessful build."
+echo 'done.'
+
+
+## Test build
+echo 'Testing minified... '
+./testMin | grep -E -q 'FAILED' && die "Aborting due to minified version failing tests.
+"
+echo 'passed.'
+
+
+## Commit
+echo 'Committing... '
+git commit -am "Updated to version $1" || die "
+    Error committing changes...
+"
+echo 'done.'
+
+
+## Tag
+echo 'Tagging as version $1... '
+git tag -am 'Version $1' v$1 || die "
+    Error tagging...
+"
+echo 'done.'
+
+
+## Push
+echo 'Pushing to origin... '
+git push origin master || die "
+    Error pushing to origin...
+"
+git push origin --tags || die "
+    Error pushing tags to origin...
+"
+echo 'done.'

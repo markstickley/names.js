@@ -1,8 +1,16 @@
 // If there is no support for AMD or requirejs, add a run-once function to load
 //   the module.
-if(typeof define === 'undefined') {
-    define = function(callback) {
-        callback();
+if(typeof define == 'undefined') {
+    define = function() {
+        if(typeof arguments[0] == 'function') {
+            arguments[0]();
+        }
+        else if(typeof arguments[1] == 'function') {
+            arguments[1]();
+        }
+        else if(typeof arguments[2] == 'function') {
+            arguments[2]();
+        }
         define = undefined;
     };
 }

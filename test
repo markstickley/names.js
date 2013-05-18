@@ -1,0 +1,12 @@
+#!/bin/bash
+
+# Test using Jasmine
+# Assuming phantomjs is available on PATH
+
+echo "Testing un-minified/require... "
+phantomjs tests/run-jasmine.js tests/index.html
+echo "done."
+
+echo "Testing un-minified/no-require... "
+phantomjs tests/run-jasmine.js tests/indexNoRequire.html
+echo "done."

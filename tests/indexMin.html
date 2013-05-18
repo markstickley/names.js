@@ -1,0 +1,56 @@
+<html>
+    <head>
+        <title>names.js test suite (minified)</title>
+
+        <link rel="stylesheet" type="text/css" href="../lib/jasmine/lib/jasmine-core/jasmine.css">
+
+        <script type="text/javascript">
+            var require = {
+                paths: {
+                    jasmine: "../lib/jasmine/lib/jasmine-core",
+                    namesTests: 'namesTests',
+                    names: '../names.min'
+                },
+                shim: {
+                    'jasmine/jasmine-html': ['jasmine/jasmine']
+                },
+                deps: ['namesTests', 'jasmine/jasmine', 'jasmine/jasmine-html'],
+                callback: function() {
+                    var alreadyRun = false,
+                        jasmineEnv = jasmine.getEnv();
+
+                    jasmineEnv.updateInterval = 250;
+
+                    var htmlReporter = new jasmine.HtmlReporter();
+                    jasmineEnv.addReporter(htmlReporter);
+
+                    jasmineEnv.specFilter = function(spec) {
+                        return htmlReporter.specFilter(spec);
+                    };
+
+                    function onReadyStateChange() {
+                        if(document.readyState !== "loading" && !alreadyRun) {
+                            alreadyRun = true;
+                            jasmineEnv.execute();
+                        }
+                    };
+
+                    if(document.readyState === "loading"){
+                        document.addEventListener ?
+                        document.addEventListener("readystatechange", onReadyStateChange, false) :
+                        document.attachEvent && document.attachEvent("readystatechange", onReadyStateChange);
+                    }
+                    else{
+                        onReadyStateChange();
+                    }
+                }
+            };
+        </script>
+        <script type="text/javascript" src="../lib/require/require.js"></script>
+    </head>
+    <body>
+        <h1>names.js test suite (minified)</h1>
+
+        <div id="HTMLReporter" class="jasmine_reporter"></div>
+    </body>
+</html>
