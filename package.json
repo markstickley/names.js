@@ -1,7 +1,7 @@
 {
     "name": "names.js",
     "preferGlobal": "false",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "author": "Mark Stickley <markstickley@theyakshack.co.uk>",
     "description": "A clearer way to supply arguments to functions",
     "contributors": [
