@@ -127,8 +127,8 @@ echo 'done.'
 
 
 ## Tag
-echo 'Tagging as version $1... '
-git tag -am 'Version $1' v$1 || die "
+echo "Tagging as version $1... "
+git tag -am "Version $1" v$1 || die "
     Error tagging...
 "
 echo 'done.'
