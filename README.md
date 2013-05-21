@@ -16,7 +16,7 @@ name.js adds the following features to the JavaScript Function prototype:
 Usage
 -----
 
-For full documentation, please see the [documentation pages](http://markstickley.github.com/name.js).
+For full documentation, please see the [documentation pages](http://markstickley.github.io/names.js/).
 
 
 Building

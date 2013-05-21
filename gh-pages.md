@@ -20,16 +20,16 @@ How to use names.js <a id="Quickstart"></a>
 ### Step 1: Declare
 
 ```
-var doSomething = Function.createNamed(
-    [
+var doSomething = Function.createNamed({
+    args: [
         ['arg1', 'argumentType', 'defaultValue'],
         ['arg2', 'string', 'defaultValue'], // Eg.
         ['arg3', MyClass, someVar] // or this
     ],
-    function(arg1, arg2, arg3) {
+    method: function(arg1, arg2, arg3) {
         ...
     }
-);
+});
 ```
 
 ### Step 2: Call
@@ -180,12 +180,12 @@ Further Usage Information <a id="FurtherUsage"></a>
 ### Omitting an argument sets it to `null`
 
 ```
-var anyOldFunction = Function.createNamed(
-    [['arg1'], ['arg2'], ['arg3']],
-    function(arg1, arg2, arg3) {
+var anyOldFunction = Function.createNamed({
+    args: [['arg1'], ['arg2'], ['arg3']],
+    method: function(arg1, arg2, arg3) {
         return [arg1, arg2, arg3];
     }
-);
+});
 
 anyOldFunction.applyNamed(null, {
     arg3: 'baz',
