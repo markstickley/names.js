@@ -50,16 +50,16 @@
 
 <h3>Step 1: Declare</h3>
 
-<pre><code>var doSomething = Function.createNamed(
-    [
+<pre><code>var doSomething = Function.createNamed({
+    args: [
         ['arg1', 'argumentType', 'defaultValue'],
         ['arg2', 'string', 'defaultValue'], // Eg.
         ['arg3', MyClass, someVar] // or this
     ],
-    function(arg1, arg2, arg3) {
+    method: function(arg1, arg2, arg3) {
         ...
     }
-);
+});
 </code></pre>
 
 <h3>Step 2: Call</h3>
@@ -196,12 +196,12 @@
 <h3>Omitting an argument sets it to <code>null</code>
 </h3>
 
-<pre><code>var anyOldFunction = Function.createNamed(
-    [['arg1'], ['arg2'], ['arg3']],
-    function(arg1, arg2, arg3) {
+<pre><code>var anyOldFunction = Function.createNamed({
+    args: [['arg1'], ['arg2'], ['arg3']],
+    method: function(arg1, arg2, arg3) {
         return [arg1, arg2, arg3];
     }
-);
+});
 
 anyOldFunction.applyNamed(null, {
     arg3: 'baz',
